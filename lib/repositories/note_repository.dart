@@ -22,6 +22,7 @@ class NoteRepository {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String noteJson = jsonEncode(note.toJson());
     await pref.setString(note.id, noteJson);
+    print('Note updated: ${note.toJson()}');
     return note;
   }
 

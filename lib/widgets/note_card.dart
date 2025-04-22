@@ -1,7 +1,6 @@
 import 'package:assignment_3/blocs/delete_note/delete_note_bloc.dart';
 import 'package:assignment_3/blocs/update_note/update_note_bloc.dart';
 import 'package:assignment_3/models/note.dart';
-import 'package:assignment_3/repositories/note_repository.dart';
 import 'package:assignment_3/screens/update_note_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +27,7 @@ class _NoteCardState extends State<NoteCard> {
     }
   }
 
-  void deleteNote(Note note) {
+  void _deleteNote(Note note) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -60,6 +59,33 @@ class _NoteCardState extends State<NoteCard> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${note.title} deleted successfully!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _pinNote(Note note) {
+    print(note.pinned);
+    bool newPinnedState = !note.pinned; // this is the state you're sending
+    print(newPinnedState);
+
+    context.read<UpdateNoteBloc>().add(UpdateNote(
+          note: Note(
+            pinned: newPinnedState,
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            category: note.category,
+          ),
+        ));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          newPinnedState
+              ? '${note.title} pinned successfully!'
+              : '${note.title} unpinned successfully!',
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -189,10 +215,21 @@ class _NoteCardState extends State<NoteCard> {
                             SizedBox(width: 8),
                             GestureDetector(
                               onTap: () {
-                                deleteNote(widget.note);
+                                _deleteNote(widget.note);
                               },
                               child: const Icon(Icons.delete, size: 18),
                             ),
+                            SizedBox(width: 8),
+                            GestureDetector(
+                                onTap: () {
+                                  _pinNote(widget.note);
+                                },
+                                child: Icon(
+                                  widget.note.pinned
+                                      ? Icons.push_pin
+                                      : Icons.push_pin_outlined,
+                                  size: 18,
+                                )),
                           ],
                         ),
                       ),

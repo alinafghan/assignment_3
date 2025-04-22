@@ -16,11 +16,30 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   TextEditingController contentController = TextEditingController();
 
   void addNote(BuildContext context) {
+    if (titleController.text.isEmpty || contentController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    if (selectedCategory.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
     context.read<AddNoteBloc>().add(AddNote(
         note: Note(
             id: '',
             title: titleController.text,
             content: contentController.text,
+            pinned: false,
             category: selectedCategory)));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

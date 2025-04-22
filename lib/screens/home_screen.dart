@@ -135,13 +135,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('No notes found'),
                 );
               } else {
+                final sortedNotes = [...state.notes];
+                sortedNotes.sort((a, b) {
+                  if (a.pinned == b.pinned) return 0;
+                  return a.pinned ? -1 : 1;
+                });
                 return Center(
                   child: GridView.builder(
-                      itemCount: state.notes.length,
+                      itemCount: sortedNotes.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2),
                       itemBuilder: (context, i) {
-                        return NoteCard(note: state.notes[i]);
+                        return NoteCard(note: sortedNotes[i]);
                       }),
                 );
               }

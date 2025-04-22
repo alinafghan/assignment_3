@@ -27,6 +27,7 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
   void updateNote() {
     context.read<UpdateNoteBloc>().add(UpdateNote(
         note: Note(
+            pinned: widget.note.pinned,
             id: widget.note.id,
             title: titleController.text,
             content: contentController.text,
