@@ -146,7 +146,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 184, 141, 156),
+              backgroundColor: Colors.pink.shade100,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
