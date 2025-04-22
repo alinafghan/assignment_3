@@ -29,19 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color _getCategoryColor(String category) {
-      switch (category.toLowerCase()) {
-        case 'work':
-          return Colors.yellow.shade100;
-        case 'study':
-          return Colors.pink.shade100;
-        case 'personal':
-          return Colors.lightBlue.shade100;
-        default:
-          return Colors.yellow.shade100;
-      }
-    }
-
     void filterNotes(String filter) {
       if (filter == 'All') {
         getAllNotes();
@@ -56,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("NoteIt"),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 16, top: 6),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.circular(12),
