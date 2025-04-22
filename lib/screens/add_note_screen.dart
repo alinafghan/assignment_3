@@ -1,10 +1,13 @@
 import 'package:assignment_3/blocs/add_note_bloc/add_note_bloc.dart';
+import 'package:assignment_3/blocs/update_note/update_note_bloc.dart';
 import 'package:assignment_3/models/note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+  final String addOrUpdate;
+  final Note? note;
+  const AddNoteScreen({super.key, required this.addOrUpdate, this.note});
 
   @override
   State<AddNoteScreen> createState() => _AddNoteScreenState();
@@ -14,6 +17,23 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   String selectedCategory = 'Work'; // Default category
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+
+  void updateNote() {
+    context.read<UpdateNoteBloc>().add(UpdateNote(
+        note: Note(
+            pinned: widget.note!.pinned,
+            id: widget.note!.id,
+            title: titleController.text,
+            content: contentController.text,
+            category: selectedCategory)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${widget.note!.title} updated successfully!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context);
+  }
 
   void addNote(BuildContext context) {
     if (titleController.text.isEmpty || contentController.text.isEmpty) {
@@ -59,11 +79,21 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   @override
+  void initState() {
+    if (widget.addOrUpdate == 'Update' && widget.note != null) {
+      titleController.text = widget.note!.title;
+      contentController.text = widget.note!.content;
+      selectedCategory = widget.note!.category;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        title: Text('Add Note'),
+        title: Text('${widget.addOrUpdate} Note'),
       ),
       body: Center(
           child: Column(
@@ -98,7 +128,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             child: DropdownButtonFormField<String>(
               value: selectedCategory,
               onChanged: (String? newValue) {
-                // Handle category selection
                 selectedCategory = newValue!;
               },
               items: ['Work', 'Personal', 'Study'].map((String category) {
@@ -123,10 +152,14 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               ),
             ),
             onPressed: () {
-              addNote(context);
+              if (widget.addOrUpdate == 'Add') {
+                addNote(context);
+              } else {
+                updateNote();
+              }
             },
             child: Text(
-              'Save',
+              widget.addOrUpdate == 'Add' ? 'Save' : 'Update',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16,

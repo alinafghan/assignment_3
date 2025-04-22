@@ -1,7 +1,7 @@
 import 'package:assignment_3/blocs/delete_note/delete_note_bloc.dart';
 import 'package:assignment_3/blocs/update_note/update_note_bloc.dart';
 import 'package:assignment_3/models/note.dart';
-import 'package:assignment_3/screens/update_note_screen.dart';
+import 'package:assignment_3/screens/add_note_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -205,8 +205,9 @@ class _NoteCardState extends State<NoteCard> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        UpdateNoteScreen(note: widget.note),
+                                    builder: (context) => AddNoteScreen(
+                                        addOrUpdate: 'Update',
+                                        note: widget.note),
                                   ),
                                 );
                               },
