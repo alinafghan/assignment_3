@@ -18,6 +18,7 @@ class AddNoteBloc extends Bloc<AddNoteEvent, AddNoteState> {
       try {
         Note note = await noteRepository.saveNote(event.note);
         emit(AddNoteSuccess(note: note));
+        print('Note added successfully: emitting success state');
       } catch (e) {
         emit(AddNoteFailure(e.toString()));
       }

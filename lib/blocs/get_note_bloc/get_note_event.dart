@@ -22,3 +22,12 @@ class GetNoteEventGetById extends GetNoteEvent {
   @override
   List<Object> get props => [noteId];
 }
+
+class GetNoteEventFilter extends GetNoteEvent {
+  final String filter;
+
+  const GetNoteEventFilter(this.filter);
+
+  @override
+  List<Object> get props => [filter];
+}

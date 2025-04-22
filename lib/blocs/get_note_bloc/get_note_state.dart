@@ -13,11 +13,12 @@ final class GetNoteLoading extends GetNoteState {}
 
 final class GetNoteLoaded extends GetNoteState {
   final List<Note> notes;
+  final String? category;
 
-  const GetNoteLoaded(this.notes);
+  const GetNoteLoaded(this.notes, this.category);
 
   @override
-  List<Object> get props => [notes];
+  List<Object> get props => [notes, category ?? 'All'];
 }
 
 final class GetNoteError extends GetNoteState {
@@ -42,6 +43,28 @@ final class GetNoteErrorById extends GetNoteState {
   final String error;
 
   const GetNoteErrorById(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+final class GetNotesFilteredInitial extends GetNoteState {}
+
+final class GetNoteFilteredLoading extends GetNoteState {}
+
+final class GetNoteFiltered extends GetNoteState {
+  final List<Note> notes;
+
+  const GetNoteFiltered(this.notes);
+
+  @override
+  List<Object> get props => [notes];
+}
+
+final class GetNoteFilteredError extends GetNoteState {
+  final String error;
+
+  const GetNoteFilteredError(this.error);
 
   @override
   List<Object> get props => [error];

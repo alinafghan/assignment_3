@@ -22,6 +22,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             title: titleController.text,
             content: contentController.text,
             category: selectedCategory)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${titleController.text} added successfully!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context); // Close the screen after adding the note
   }
 
   @override
@@ -73,6 +80,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               value: selectedCategory,
               onChanged: (String? newValue) {
                 // Handle category selection
+                selectedCategory = newValue!;
               },
               items: ['Work', 'Personal', 'Study'].map((String category) {
                 return DropdownMenuItem<String>(

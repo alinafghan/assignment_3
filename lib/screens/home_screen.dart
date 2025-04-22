@@ -1,6 +1,7 @@
 import 'package:assignment_3/blocs/add_note_bloc/add_note_bloc.dart';
+import 'package:assignment_3/blocs/delete_note/delete_note_bloc.dart';
 import 'package:assignment_3/blocs/get_note_bloc/get_note_bloc.dart';
-import 'package:assignment_3/repositories/note_repository.dart';
+import 'package:assignment_3/blocs/update_note/update_note_bloc.dart';
 import 'package:assignment_3/screens/add_note_screen.dart';
 import 'package:assignment_3/widgets/note_card.dart';
 import 'package:flutter/material.dart';
@@ -14,114 +15,151 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String selectedFilter = 'All';
+  final List<String> filterOptions = ['All', 'Work', 'Personal', 'Study'];
   @override
   void initState() {
-    BlocProvider.of<GetNoteBloc>(context).add(GetNoteEventGetAll());
+    getAllNotes();
     super.initState();
+  }
+
+  void getAllNotes() {
+    BlocProvider.of<GetNoteBloc>(context).add(GetNoteEventGetAll());
   }
 
   @override
   Widget build(BuildContext context) {
+    Color _getCategoryColor(String category) {
+      switch (category.toLowerCase()) {
+        case 'work':
+          return Colors.yellow.shade100;
+        case 'study':
+          return Colors.pink.shade100;
+        case 'personal':
+          return Colors.lightBlue.shade100;
+        default:
+          return Colors.yellow.shade100;
+      }
+    }
+
+    void filterNotes(String filter) {
+      if (filter == 'All') {
+        getAllNotes();
+      } else {
+        BlocProvider.of<GetNoteBloc>(context).add(GetNoteEventFilter(filter));
+      }
+    }
+
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
         title: const Text("NoteIt"),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+            child: DropdownButtonHideUnderline(
+              child: BlocBuilder<GetNoteBloc, GetNoteState>(
+                builder: (context, state) {
+                  String dropdownValue = 'All';
+
+                  if (state is GetNoteLoaded && state.category != null) {
+                    dropdownValue = state.category!;
+                  }
+                  return DropdownButton<String>(
+                    value: dropdownValue,
+                    icon: const Icon(Icons.arrow_drop_down_sharp),
+                    iconSize: 24,
+                    elevation: 16,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        selectedFilter = newValue;
+                        filterNotes(selectedFilter);
+                      }
+                    },
+                    items: filterOptions
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(value),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
-      body: BlocBuilder<GetNoteBloc, GetNoteState>(
-        builder: (context, state) {
-          if (state is GetNoteLoaded) {
-            if (state.notes.isEmpty) {
-              return const Center(
-                child: Text('No notes found'),
-              );
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<AddNoteBloc, AddNoteState>(
+            listener: (context, listenState) {
+              if (listenState is AddNoteSuccess) {
+                getAllNotes(); //should refetch WORKS
+              }
+            },
+          ),
+          BlocListener<DeleteNoteBloc, DeleteNoteState>(
+            listener: (context, listenStateDelete) {
+              if (listenStateDelete is DeleteNoteSuccess) {
+                getAllNotes(); //should refetch WORKS
+              }
+            },
+          ),
+          BlocListener<UpdateNoteBloc, UpdateNoteState>(
+            listener: (context, listenStateUpdate) {
+              if (listenStateUpdate is UpdateNoteSuccess) {
+                print('we herd it');
+                getAllNotes(); //should refetch
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<GetNoteBloc, GetNoteState>(
+          builder: (context, state) {
+            if (state is GetNoteLoaded) {
+              if (state.notes.isEmpty) {
+                return const Center(
+                  child: Text('No notes found'),
+                );
+              } else {
+                return Center(
+                  child: GridView.builder(
+                      itemCount: state.notes.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2),
+                      itemBuilder: (context, i) {
+                        return NoteCard(note: state.notes[i]);
+                      }),
+                );
+              }
             } else {
-              return Center(
-                child: GridView.builder(
-                    itemCount: state.notes.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2),
-                    itemBuilder: (context, i) {
-                      return GestureDetector(
-                          onTap: () => {
-                                showModalBottomSheet<void>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return SizedBox(
-                                      height: 200,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment
-                                              .start, // aligns children to the left
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    state.notes[i].title,
-                                                    style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    textAlign: TextAlign.left,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 10),
-                                                  padding:
-                                                      const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.blue,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                  child: Text(
-                                                    state.notes[i].category,
-                                                    style: const TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Text(
-                                              state.notes[i].content,
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              },
-                          child: NoteCard(note: state.notes[i]));
-                    }),
-              );
+              return const Text('loading');
             }
-          } else {
-            return const Text('loading');
-          }
-        },
+          },
+        ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(24.0),
         child: FloatingActionButton(
+          backgroundColor: Colors.pink.shade100,
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) =>
-                      AddNoteBloc(repository: NoteRepository()),
-                  child: const AddNoteScreen(),
-                ),
+                builder: (context) => const AddNoteScreen(),
               ),
             );
           },

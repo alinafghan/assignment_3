@@ -19,7 +19,10 @@ class NoteRepository {
   }
 
   Future<Note> updateNote(Note note) async {
-    return await saveNote(note); //same as write
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String noteJson = jsonEncode(note.toJson());
+    await pref.setString(note.id, noteJson);
+    return note;
   }
 
   Future<Note?> getNoteById(String id) async {

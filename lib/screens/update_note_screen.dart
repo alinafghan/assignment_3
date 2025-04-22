@@ -1,28 +1,43 @@
-import 'package:assignment_3/blocs/add_note_bloc/add_note_bloc.dart';
 import 'package:assignment_3/blocs/update_note/update_note_bloc.dart';
 import 'package:assignment_3/models/note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UpdateNoteScreen extends StatefulWidget {
-  const UpdateNoteScreen({super.key});
+  final Note note;
+  const UpdateNoteScreen({super.key, required this.note});
 
   @override
   State<UpdateNoteScreen> createState() => _UpdateNoteScreenState();
 }
 
 class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
+  void initState() {
+    super.initState();
+    // Initialize the content controller with the note's content
+    contentController.text = widget.note.content;
+    titleController.text = widget.note.title;
+    selectedCategory = widget.note.category;
+  }
+
   String selectedCategory = 'Work'; // Default category
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
 
-  void updateNote(BuildContext context) {
+  void updateNote() {
     context.read<UpdateNoteBloc>().add(UpdateNote(
         note: Note(
-            id: '',
+            id: widget.note.id,
             title: titleController.text,
             content: contentController.text,
             category: selectedCategory)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${widget.note.title} updated successfully!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context);
   }
 
   @override
@@ -97,7 +112,7 @@ class _UpdateNoteScreenState extends State<UpdateNoteScreen> {
               ),
             ),
             onPressed: () {
-              updateNote(context);
+              updateNote();
             },
             child: Text(
               'Update',

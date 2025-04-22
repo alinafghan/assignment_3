@@ -16,10 +16,10 @@ class UpdateNoteBloc extends Bloc<UpdateNoteEvent, UpdateNoteState> {
       try {
         Note note = await noteRepository.updateNote(event.note);
         emit(UpdateNoteSuccess(note: note));
+        print('sucess eidpate');
       } catch (e) {
         emit(UpdateNoteFailure(error: e.toString()));
       }
-      // TODO: implement event handler
     });
   }
 }
