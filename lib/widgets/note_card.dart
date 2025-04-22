@@ -98,48 +98,46 @@ class _NoteCardState extends State<NoteCard> {
         showModalBottomSheet<void>(
           context: context,
           builder: (BuildContext context) {
-            return SizedBox(
-              height: 200,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start, // aligns children to the left
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.note.title,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.left,
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // aligns children to the left
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.note.title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
+                          textAlign: TextAlign.left,
                         ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 10),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: _getCategoryColor(widget.note.category),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            widget.note.category,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      widget.note.content,
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: _getCategoryColor(widget.note.category),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          widget.note.category,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.note.content,
+                    textAlign: TextAlign.left,
+                  ),
+                ],
               ),
             );
           },
